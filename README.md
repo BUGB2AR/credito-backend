@@ -61,9 +61,9 @@ obs: outras alternativas para rodar via maven
 
 endpoints + endpoint extra
 
-http://localhost:8088/api/creditos/{numeroNfse}
-http://localhost:8088/api/creditos/numero/{numeroCredito}
-http://localhost:8088/api/creditos/credito/{id} -> foi criado apenas para fins de testes com id.
+- http://localhost:8088/api/creditos/{numeroNfse}
+- http://localhost:8088/api/creditos/numero/{numeroCredito}
+- http://localhost:8088/api/creditos/credito/{id} -> foi criado apenas para fins de testes com id.
 
 
 
