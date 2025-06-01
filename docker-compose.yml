@@ -14,5 +14,56 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    volumes:
+      - zkdata:/bitnami/zookeeper
+
+  kafka:
+    image: bitnami/kafka:3
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://kafka:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_HOST
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    volumes:
+      - kafkadata:/bitnami/kafka
+
+  kafka-topic-creator:
+    image: bitnami/kafka:3
+    container_name: kafka_topic_creator
+    depends_on:
+      - kafka
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo "Esperando Kafka iniciar..."
+        until kafka-topics.sh --bootstrap-server kafka:29092 --list; do
+          echo "Kafka não disponível, tentando novamente em 3 segundos..."
+          sleep 3
+        done
+        echo "Criando tópico consulta-credito-topic quando não existir..."
+        kafka-topics.sh --bootstrap-server kafka:29092 --create --topic consulta-credito-topic --partitions 1 --replication-factor 1 || true
+        echo "Tópico criado (ou já existia)."
+        tail -f /dev/null
+    restart: "no"
+
 volumes:
   pgdata:
+  zkdata:
+  kafkadata:

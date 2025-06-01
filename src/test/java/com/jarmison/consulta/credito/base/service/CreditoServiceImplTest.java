@@ -2,6 +2,8 @@ package com.jarmison.consulta.credito.base.service;
 
 import com.jarmison.consulta.credito.core.exception.ResourceNotFoundException;
 import com.jarmison.consulta.credito.core.mapper.CreditoMapper;
+import com.jarmison.consulta.credito.core.messages.event.ConsultaCreditoEvent;
+import com.jarmison.consulta.credito.core.messages.publisher.KafkaPublisher;
 import com.jarmison.consulta.credito.domain.dto.CreditoDto;
 import com.jarmison.consulta.credito.domain.entity.Credito;
 import com.jarmison.consulta.credito.domain.repository.CreditoRepository;
@@ -25,6 +27,9 @@ class CreditoServiceImplTest {
 
     @Mock
     private CreditoMapper creditoMapper;
+
+    @Mock
+    private KafkaPublisher kafkaPublisher;
 
     @InjectMocks
     private CreditoServiceImpl creditoService;
@@ -69,6 +74,12 @@ class CreditoServiceImplTest {
 
         verify(creditoRepository).findByNumeroNfse("NF001");
         verify(creditoMapper).toDto(creditoEntity);
+
+        ArgumentCaptor<ConsultaCreditoEvent> eventCaptor = ArgumentCaptor.forClass(ConsultaCreditoEvent.class);
+        verify(kafkaPublisher, times(1)).publish(eventCaptor.capture());
+
+        ConsultaCreditoEvent publishedEvent = eventCaptor.getValue();
+        assertThat(publishedEvent.getNumeroCredito()).isEqualTo("NF001");
     }
 
     @Test
@@ -95,5 +106,9 @@ class CreditoServiceImplTest {
 
         verify(creditoRepository).findByNumeroCredito("123456");
         verify(creditoMapper).toDto(creditoEntity);
+
+        verify(kafkaPublisher).publish(argThat(event ->
+                "123456".equals(event.getNumeroCredito())
+        ));
     }
 }
