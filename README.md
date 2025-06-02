@@ -67,6 +67,16 @@ endpoints + endpoint extra
 - http://localhost:8088/api/creditos/numero/{numeroCredito}
 - http://localhost:8088/api/creditos/credito/{id} -> foi criado apenas para fins de testes com id.
 
+- observações: como o banco roda o script de sql sugiro rodar o projeto no caso do properties dessas forma 1 execução colocar
+
+- spring.jpa.hibernate.ddl-auto=none
+
+  e ajustar o initializer do sql (tabelas e inserts) dessa forma executar a primeira vez dessa forma como aways e após executar de novo trocar para never para nao ficar reexecutando o script de inicialização.
+
+  spring.sql.init.mode=always
+
+  e remover always para = never apenas isso de observações para rodar o bacekknd corretamente
+
 
 
 
