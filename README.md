@@ -28,6 +28,8 @@ Tecnologias Utilizadas
 
     JUnit 5 + Mockito para testes unitários
 
+    Docker + Docker compose
+
 
 A arquitetura do projeto segue os princípios de camadas separadas de responsabilidade, utilizando:
 
