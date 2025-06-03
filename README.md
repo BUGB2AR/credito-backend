@@ -1,20 +1,17 @@
 Consulta Crédito API
-Sobre o projeto
 
-Este projeto é uma API RESTful para consulta e gerenciamento de informações de crédito.
-Ele permite buscar dados de crédito pelo número da NFSe ou pelo número do crédito, com retorno de dados detalhados.
-Além disso, eventos de consulta são publicados em um tópico Kafka para processamento assíncrono, garantindo integração com sistemas downstream.
-Funcionalidades principais
+Este projeto é uma API RESTful desenvolvida para consulta e gerenciamento de informações de crédito. Ele permite a busca de dados de crédito através do número da NFSe ou do número do crédito, retornando informações detalhadas. Além disso, toda consulta realizada gera um evento Kafka, possibilitando a integração assíncrona com sistemas downstream.
+⚙️ Funcionalidades Principais
 
-    Buscar créditos por número da NFSe.
+    🔍 Buscar créditos por número da NFSe
 
-    Buscar crédito por número do crédito.
+    🔍 Buscar créditos por número do crédito
 
-    Publicar eventos de consulta no Kafka para integração assíncrona.
+    🔄 Publicar eventos de consulta no Kafka para integração assíncrona
 
-    Tratamento de erros com exceções customizadas (ex: ResourceNotFoundException).
+    ❗ Tratamento de erros com exceções customizadas, como ResourceNotFoundException
 
-Tecnologias Utilizadas
+🛠️ Tecnologias Utilizadas
 
     Java 17
 
@@ -22,66 +19,71 @@ Tecnologias Utilizadas
 
     Spring Data JPA (Hibernate)
 
-    Kafka (Spring Kafka)
+    Apache Kafka (com Spring Kafka)
 
-    Banco de dados relacional (MySQL ou PostgreSQL)
+    MySQL ou PostgreSQL
 
-    JUnit 5 + Mockito para testes unitários
+    JUnit 5 + Mockito (para testes unitários)
 
-    Docker + Docker compose
+    Docker + Docker Compose
 
+🧱 Arquitetura do Projeto
 
-A arquitetura do projeto segue os princípios de camadas separadas de responsabilidade, utilizando:
+A arquitetura segue o princípio de separação de responsabilidades em camadas bem definidas:
 
-    Interfaces para definir contratos dos serviços (CreditoService) e dos repositórios (CreditoRepository);
+    Interfaces para definição de contratos (CreditoService, CreditoRepository)
 
-    Implementações concretas (ex: CreditoServiceImpl) que centralizam a lógica de negócio;
+    Implementações concretas, como CreditoServiceImpl, concentrando a lógica de negócio
 
-    Generics (quando aplicável) para permitir reutilização de mapeamentos e comportamentos comuns, especialmente no uso de Mapper<Entity, DTO> e possíveis GenericService.
-    
-    usei essa forma pragmática para manter o projeto simples, limpo e modular.
+    Uso opcional de Generics para reaproveitamento de lógica comum, especialmente em mapeadores Mapper<Entity, DTO> e serviços genéricos
 
-
-Como subir o projeto
-
-Siga os passos abaixo para executar o projeto localmente:
+Essa abordagem pragmática visa manter o projeto simples, limpo e modular.
+🚀 Como Executar o Projeto Localmente
 1. Clone o repositório
 
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/BUGB2AR/credito-backend.git
+cd credito-backend
 
-2. Comandos para subir o banco e o Kafka
+2. Suba os serviços com Docker Compose
 
-docker compose up -d ou se prefirir ver os logs (docker compose up apenas).
+docker compose up -d
 
-3. Usando a ide Intellij basta rodar agora o projeto irá subir na porta 8085.
- 
-obs: outras alternativas para rodar via maven
+    Caso deseje acompanhar os logs:
 
-   mvn clean install
-   mvn spring-boot:run
+docker compose up
 
-endpoints + endpoint extra
+3. Execute a aplicação
 
-- http://localhost:8088/api/creditos/{numeroNfse}
-- http://localhost:8088/api/creditos/numero/{numeroCredito}
-- http://localhost:8088/api/creditos/credito/{id} -> foi criado apenas para fins de testes com id.
+Se estiver utilizando o IntelliJ IDEA, basta rodar o projeto como uma aplicação Spring Boot.
+A API estará disponível na porta 8085.
+Alternativa com Maven:
 
-- observações: como o banco roda o script de sql sugiro rodar o projeto no caso do properties dessas forma 1 execução colocar
+mvn clean install
+mvn spring-boot:run
 
-- spring.jpa.hibernate.ddl-auto=none
+📌 Endpoints Disponíveis
 
-  e ajustar o initializer do sql (tabelas e inserts) dessa forma executar a primeira vez dessa forma como aways e após executar de novo trocar para never para nao ficar reexecutando o script de inicialização.
+    Buscar por NFSe
+    GET http://localhost:8088/api/creditos/{numeroNfse}
 
-  spring.sql.init.mode=always
+    Buscar por número do crédito
+    GET http://localhost:8088/api/creditos/numero/{numeroCredito}
 
-  e remover always para = never apenas isso de observações para rodar o bacekknd corretamente
+    Buscar por ID (para testes)
+    GET http://localhost:8088/api/creditos/credito/{id}
 
+⚠️ Observações Importantes
 
+Na primeira execução do projeto, é necessário configurar o comportamento do Hibernate e a inicialização do SQL da seguinte forma no application.properties:
 
+spring.jpa.hibernate.ddl-auto=none
+spring.sql.init.mode=always
 
+Após a primeira execução (que irá criar as tabelas e popular os dados), altere:
 
+spring.sql.init.mode=never
 
+Isso evitará que os scripts de inicialização sejam reexecutados nas próximas execuções.
+🧪 Testes
 
-
-
+Os testes unitários utilizam JUnit 5 e Mockito para validação da lógica de negócios.
